@@ -49,16 +49,8 @@
     
     self.accY.text = [NSString stringWithFormat:@"%.2f",self.motionManager.accelerometerData.acceleration.y];
     self.accZ.text = [NSString stringWithFormat:@"%.2f",self.motionManager.accelerometerData.acceleration.z];
-    NSLog(@"Acceleration x: %@", self.accX.text);
-    NSLog(@"Acceleration y: %@", self.accY.text);
-    NSLog(@"Acceleration z: %@", self.accZ.text);
     
-    //userAcceleration - acceleraton of device not including gravity
-    
-    
-    //NSLog(@"User Acceleration x: %@", self.accX.text);
-    //NSLog(@"User Acceleration y: %@", self.accY.text);
-    //NSLog(@"User Acceleration z: %@", self.accZ.text);
+
     
     //orientation in regular terms (maybe make a range of .9-1)
     //acceleration values in 1g correspond to the position of the phone
@@ -120,19 +112,10 @@
     }
     
 
-     NSLog(@"Orientation: %@", self.orientation.text);
-    
-    
-
     //gyroscope - rate of rotation of device in rad/s
     self.gyroX.text = [NSString stringWithFormat:@" %.2f",self.motionManager.gyroData.rotationRate.x];
     self.gyroY.text = [NSString stringWithFormat:@" %.2f",self.motionManager.gyroData.rotationRate.y];
     self.gyroZ.text = [NSString stringWithFormat:@" %.2f",self.motionManager.gyroData.rotationRate.z];
-    
-    NSLog(@"Rotation Rate in x: %@", self.gyroX.text);
-    NSLog(@"Rotation Rate in y: %@", self.gyroY.text);
-    NSLog(@"Rotation Rate in z: %@", self.gyroZ.text);
-    
     
     
     //Euler angles: yaw, pitch, roll in radians - roll is elevation(yz)
@@ -148,11 +131,7 @@
     self.posX.text = [NSString stringWithFormat:@"%.2f",cos(self.motionManager.deviceMotion.attitude.yaw)*cos(self.motionManager.deviceMotion.attitude.pitch)];
     self.posY.text = [NSString stringWithFormat:@"%.2f",sin(self.motionManager.deviceMotion.attitude.yaw)*cos(self.motionManager.deviceMotion.attitude.pitch)];
     self.posZ.text = [NSString stringWithFormat:@"%.2f",sin(self.motionManager.deviceMotion.attitude.pitch)];
-    
-    NSLog(@"Position x: %@", self.posX.text);
-    NSLog(@"Position y: %.@", self.posY.text);
-    NSLog(@"Position z: %@", self.posZ.text);
-    
+
 
     //zenith = pi/2 - angle of elevation
     //azimuth = rotation about the Z' axis - xy
@@ -162,17 +141,34 @@
     self.zenith.text = [NSString stringWithFormat:@"%.2f",(180/M_PI)*((M_PI/2)-self.motionManager.deviceMotion.attitude.roll)];
     self.azimuth.text = [NSString stringWithFormat:@"%.2f", (180/M_PI)*self.motionManager.deviceMotion.attitude.yaw];
     self.tilt.text = [NSString stringWithFormat:@"%.2f",(180/M_PI)*self.motionManager.deviceMotion.attitude.roll];
-    
-    NSLog(@"Zenith: %@", self.zenith.text);
-    NSLog(@"Azimuth: %@", self.azimuth.text);
-    NSLog(@"Tilt x: %@", self.tilt.text);
-    
-    //afternoon wed + morn thurs - log data to file
-    //friday - position, azimuth, check file is working, etc
-    
-    NSLog(self.compass.text, @"degrees");
-    NSLog(@"\n");
 
+    NSString* headerRow;
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[self dataFilePath]]) {
+        [[NSFileManager defaultManager] createFileAtPath: [self dataFilePath] contents:nil attributes:nil];
+        
+        headerRow = @"Acceleration x, Acceleration y, Acceleration z, Rotation Rate in x, Rotation Rate in y, Rotation Rate in z, Zenith, Azimuth, Tilt, Compass (in degrees), Orientation\n";
+    }
+    
+    NSString* results = [NSString stringWithFormat:@"%@,%@,%@,%@,%@,%@,%@,%@,%@,%@,%@\n",
+                         self.accX.text,
+                         self.accY.text,
+                         self.accZ.text,
+                         self.gyroX.text,
+                         self.gyroY.text,
+                         self.gyroY.text,
+                         self.zenith.text,
+                         self.azimuth.text,
+                         self.tilt.text,
+                         self.compass.text,
+                         self.orientation.text];
+    
+    NSFileHandle * fileHandle= [NSFileHandle fileHandleForUpdatingAtPath:[self dataFilePath]];
+    [fileHandle seekToEndOfFile];
+    if (headerRow != nil) {
+        [fileHandle writeData:[headerRow dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+    [fileHandle writeData:[results dataUsingEncoding:NSUTF8StringEncoding]];
+    NSLog(@"Info saved");
 
 }
 
@@ -221,7 +217,12 @@
     }
 }
 
-
+- (NSString *)dataFilePath
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    return [documentsDirectory stringByAppendingPathComponent:@"logFile7.csv"];
+}
 
 - (void)didReceiveMemoryWarning
 {
