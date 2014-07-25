@@ -29,6 +29,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *yaw;
 @property (weak, nonatomic) IBOutlet UILabel *pitch;
 
+@property (strong, nonatomic) IBOutlet UILabel *shake;
+
 @property (strong, nonatomic) IBOutlet UILabel *zenith;
 @property (strong, nonatomic) IBOutlet UILabel *azimuth;
 @property (strong, nonatomic) IBOutlet UILabel *tilt;

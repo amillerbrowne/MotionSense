@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A89B4C641981A4E6007FBA15 /* LEDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A89B4C631981A4E6007FBA15 /* LEDViewController.m */; };
 		A8AF5E0F196473600004EED2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AF5E0E196473600004EED2 /* Foundation.framework */; };
 		A8AF5E11196473600004EED2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AF5E10196473600004EED2 /* CoreGraphics.framework */; };
 		A8AF5E13196473600004EED2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AF5E12196473600004EED2 /* UIKit.framework */; };
@@ -34,6 +35,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A89B4C621981A4E6007FBA15 /* LEDViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEDViewController.h; sourceTree = "<group>"; };
+		A89B4C631981A4E6007FBA15 /* LEDViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEDViewController.m; sourceTree = "<group>"; };
 		A8AF5E0B196473600004EED2 /* MotionSense.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MotionSense.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8AF5E0E196473600004EED2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A8AF5E10196473600004EED2 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -115,6 +118,8 @@
 				A8AF5E1D196473600004EED2 /* AppDelegate.h */,
 				A8AF5E1E196473600004EED2 /* AppDelegate.m */,
 				A8AF5E20196473600004EED2 /* Main.storyboard */,
+				A89B4C621981A4E6007FBA15 /* LEDViewController.h */,
+				A89B4C631981A4E6007FBA15 /* LEDViewController.m */,
 				A8AF5E23196473600004EED2 /* ViewController.h */,
 				A8AF5E24196473600004EED2 /* ViewController.m */,
 				A8AF5E26196473600004EED2 /* Images.xcassets */,
@@ -254,6 +259,7 @@
 			files = (
 				A8AF5E25196473600004EED2 /* ViewController.m in Sources */,
 				A8AF5E1F196473600004EED2 /* AppDelegate.m in Sources */,
+				A89B4C641981A4E6007FBA15 /* LEDViewController.m in Sources */,
 				A8AF5E1B196473600004EED2 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
