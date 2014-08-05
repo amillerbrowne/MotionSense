@@ -18,6 +18,44 @@
 
 @implementation ViewController
 
+-(BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+- (void) viewDidAppear:(BOOL)animated {
+    [self becomeFirstResponder];
+    [super viewDidAppear:animated];
+}
+
+- (void) viewDidDisappear:(BOOL)animated {
+    [self resignFirstResponder];
+    [super viewDidDisappear:animated];
+}
+
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
+    if (event.subtype == UIEventSubtypeMotionShake) {
+        self.colorTemp.text = @"OFF";
+        [[UIScreen mainScreen] setBrightness:0.0];
+        /*if {
+         NSURL * url = [NSURL URLWithString:@"http://ipaddress/$2"];//$2 is off
+         NSURLRequest * req = [NSURLRequest requestWithURL:url];
+         
+         }*/
+        
+    }
+    [super motionEnded:motion withEvent:event];
+}
+-(void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event{
+    if (event.subtype == UIEventSubtypeMotionShake){
+        self.colorTemp.text = @"ON";
+        [[UIScreen mainScreen] setBrightness:1.0];
+        /*if ([self.colorTemp.text  isEqual: @"ON"]) {
+         NSURL * url = [NSURL URLWithString:@"http://ipaddress/$1"];//$1 is on
+         NSURLRequest * req = [NSURLRequest requestWithURL:url];*/
+        
+    }
+    
+}
 
 - (void)viewDidLoad
 {
@@ -41,6 +79,8 @@
     self.locationManager.delegate = self;
     [self.locationManager startUpdatingHeading];
     [self.locationManager startUpdatingLocation];
+    
+    self.colorTemp.text = @"Shake for quick ON/OFF";
 
 }
 -(void) getValues:(NSTimer *) timer {
@@ -169,7 +209,7 @@
         [fileHandle writeData:[headerRow dataUsingEncoding:NSUTF8StringEncoding]];
     }
     [fileHandle writeData:[results dataUsingEncoding:NSUTF8StringEncoding]];
-    NSLog(@"Info saved");
+    //NSLog(@"Info saved");
 
 }
 
@@ -216,15 +256,37 @@
     else {
         self.direction.text = @"Detecting Position...";
     }
+    
+   /* //color temperature control - currently does screen dim
+    if ((degrees >= 203 && degrees < 239) || (degrees >= 36 && degrees < 72)){
+        self.colorTemp.text = @"Warm: 2700K";
+        [[UIScreen mainScreen] setBrightness:0.0];
+    }
+    else if ((degrees >= 239 && degrees < 275) || (degrees >= 72 && degrees < 108)){
+        self.colorTemp.text = @"Halogen: 3000K";
+        [[UIScreen mainScreen] setBrightness:0.1];
+    }
+    else if ((degrees >= 275 && degrees < 311) || (degrees >= 108 && degrees < 144)){
+        self.colorTemp.text = @"Natural White: 4000K";
+        [[UIScreen mainScreen] setBrightness:0.4];
+    }
+    else if ((degrees >= 311 && degrees < 347) || (degrees >= 144 && degrees < 180)){
+        self.colorTemp.text = @"Day White: 5700K";
+        [[UIScreen mainScreen] setBrightness:0.7];
+    }
+    else if ((degrees >= 347 && degrees < 36)|| (degrees >= 180 && degrees < 203)){
+        self.colorTemp.text = @"Cool White: 7000K";
+        [[UIScreen mainScreen] setBrightness:1.0];
+    }*/
 }
 
 - (NSString *)dataFilePath
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-    return [documentsDirectory stringByAppendingPathComponent:@"logFile11.csv"];
+    return [documentsDirectory stringByAppendingPathComponent:@"Data1.csv"];
 }
-
+/*
 -(BOOL)canBecomeFirstResponder {
     return YES;
 }
@@ -250,6 +312,55 @@
         self.shake.text = @"ON";
     }
 }
+
+
+-(BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+- (void) viewDidAppear:(BOOL)animated {
+    [self becomeFirstResponder];
+    [super viewDidAppear:animated];
+}
+
+- (void) viewDidDisappear:(BOOL)animated {
+    [self resignFirstResponder];
+    [super viewDidDisappear:animated];
+}
+
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
+    if (event.subtype == UIEventSubtypeMotionShake) {
+        self.shake.text = @"OFF";
+    }
+    [super motionEnded:motion withEvent:event];
+}
+-(void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event{
+    if (event.subtype == UIEventSubtypeMotionShake){
+        self.shake.text = @"ON again";
+    }
+}
+
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    self.shake.text = @"This is on";
+    
+}
+//have brightness level totally up for on and 0 for off 
+-(IBAction)turnOn:(id)sender{
+    if ([self.shake.text  isEqual: @"ON"]) {
+        NSURL * url = [NSURL URLWithString:@"http://ipaddress/$1"];//$1 is on
+        NSURLRequest * req = [NSURLRequest requestWithURL:url];
+        
+    }
+    else {
+        NSURL * url = [NSURL URLWithString:@"http://ipaddress/$2"];//$2 is off
+        NSURLRequest * req = [NSURLRequest requestWithURL:url];
+        
+    }
+}
+*/
 
 
 - (void)didReceiveMemoryWarning

@@ -47,4 +47,7 @@
 @property (strong, nonatomic) CMMotionManager *motionManager;
 @property (strong, nonatomic) CLLocationManager *locationManager;
 
+@property (weak, nonatomic) IBOutlet UILabel *colorTemp;
+
+
 @end
