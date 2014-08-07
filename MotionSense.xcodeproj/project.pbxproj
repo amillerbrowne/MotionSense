@@ -21,6 +21,7 @@
 		A8AF5E30196473600004EED2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AF5E12196473600004EED2 /* UIKit.framework */; };
 		A8AF5E38196473600004EED2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A8AF5E36196473600004EED2 /* InfoPlist.strings */; };
 		A8AF5E3A196473600004EED2 /* MotionSenseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A8AF5E39196473600004EED2 /* MotionSenseTests.m */; };
+		A8C817011992A216006768EB /* RefViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A8C817001992A216006768EB /* RefViewController.m */; };
 		A8D6EFBB198AD62E0042848C /* LEDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A8D6EFBA198AD62E0042848C /* LEDViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +55,8 @@
 		A8AF5E35196473600004EED2 /* MotionSenseTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MotionSenseTests-Info.plist"; sourceTree = "<group>"; };
 		A8AF5E37196473600004EED2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A8AF5E39196473600004EED2 /* MotionSenseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MotionSenseTests.m; sourceTree = "<group>"; };
+		A8C816FF1992A216006768EB /* RefViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefViewController.h; sourceTree = SOURCE_ROOT; };
+		A8C817001992A216006768EB /* RefViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RefViewController.m; sourceTree = SOURCE_ROOT; };
 		A8D6EFB9198AD62E0042848C /* LEDViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LEDViewController.h; sourceTree = "<group>"; };
 		A8D6EFBA198AD62E0042848C /* LEDViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LEDViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -120,6 +123,8 @@
 				A8AF5E1D196473600004EED2 /* AppDelegate.h */,
 				A8AF5E1E196473600004EED2 /* AppDelegate.m */,
 				A8AF5E20196473600004EED2 /* Main.storyboard */,
+				A8C816FF1992A216006768EB /* RefViewController.h */,
+				A8C817001992A216006768EB /* RefViewController.m */,
 				A8AF5E23196473600004EED2 /* ViewController.h */,
 				A8AF5E24196473600004EED2 /* ViewController.m */,
 				A8AF5E26196473600004EED2 /* Images.xcassets */,
@@ -258,6 +263,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A8AF5E25196473600004EED2 /* ViewController.m in Sources */,
+				A8C817011992A216006768EB /* RefViewController.m in Sources */,
 				A8AF5E1F196473600004EED2 /* AppDelegate.m in Sources */,
 				A8D6EFBB198AD62E0042848C /* LEDViewController.m in Sources */,
 				A8AF5E1B196473600004EED2 /* main.m in Sources */,

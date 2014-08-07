@@ -10,6 +10,7 @@
 #import <CoreMotion/CoreMotion.h>
 #import <CoreLocation/CoreLocation.h>
 
+//a way to get rid of the timestamp from the log statements
 //#define NSLog(FORMAT, ...) printf("%s\n", [[NSString stringWithFormat:FORMAT, ##__VA_ARGS__] UTF8String])
 
 @interface ViewController ()
@@ -17,6 +18,19 @@
 @end
 
 @implementation ViewController
+
+
+//intitalizing the rgby on/off variables
+int rOn = 000;
+int gOn = 000;
+int bOn = 000;
+int yOn = 000;
+
+int rOff = 255;
+int gOff = 255;
+int bOff = 255;
+int yOff = 255;
+
 
 -(BOOL)canBecomeFirstResponder {
     return YES;
@@ -32,30 +46,124 @@
     [super viewDidDisappear:animated];
 }
 
+//when shake motion ends, it turns off
 - (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
     if (event.subtype == UIEventSubtypeMotionShake) {
         self.colorTemp.text = @"OFF";
-        [[UIScreen mainScreen] setBrightness:0.0];
-        /*if {
-         NSURL * url = [NSURL URLWithString:@"http://ipaddress/$2"];//$2 is off
-         NSURLRequest * req = [NSURLRequest requestWithURL:url];
-         
-         }*/
+        if ([self.colorTemp.text  isEqual: @"0FF"]){
+            rOff = 255;
+            gOff = 255;
+            bOff = 255;
+            yOff = 255;
+            //NSLog(@"r = %d", rOff);
+            
+        }
         
     }
     [super motionEnded:motion withEvent:event];
 }
+
+//when motion starts, it turns on
 -(void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event{
     if (event.subtype == UIEventSubtypeMotionShake){
         self.colorTemp.text = @"ON";
-        [[UIScreen mainScreen] setBrightness:1.0];
-        /*if ([self.colorTemp.text  isEqual: @"ON"]) {
-         NSURL * url = [NSURL URLWithString:@"http://ipaddress/$1"];//$1 is on
-         NSURLRequest * req = [NSURLRequest requestWithURL:url];*/
         
+        if ([self.colorTemp.text  isEqual: @"ON"]) {
+            rOn = 000;
+            gOn = 000;
+            bOn = 000;
+            yOn = 000;
+        }
+    }
+}
+
+//this method is what is used to set up the TCP with the TiLED
+-(void)streamOpenWithIp:(NSString *)ip withPortNumber:(int)portNumber;
+{
+    CFReadStreamRef readStream;
+    CFWriteStreamRef writeStream;
+    CFStreamCreatePairWithSocketToHost(NULL, (__bridge CFStringRef)ip, portNumber, &readStream, &writeStream);
+
+    if(readStream && writeStream)
+    {
+        //property for socket streams - close and release the sockets
+        CFReadStreamSetProperty(readStream, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanTrue);
+        CFWriteStreamSetProperty(writeStream, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanTrue);
+        
+        //Setup input stream
+        inputStream = (__bridge NSInputStream *)readStream;
+        [inputStream setDelegate:self];
+        [inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        [inputStream open];
+        
+        //Setup output stream
+        outputStream = (__bridge NSOutputStream *)writeStream;
+        [outputStream setDelegate:self];
+        [outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        [outputStream open];
     }
     
+    NSString *response  = @"This is a Test";
+    NSData *data = [[NSData alloc] initWithData:[response dataUsingEncoding:NSASCIIStringEncoding]];
+    [outputStream write:[data bytes] maxLength:[data length]];
 }
+
+//sending data - want to send the rgby values
+
+
+//TCP Receive
+-(void) stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode{
+    NSLog(@"stream event %u", eventCode);
+	
+	switch (eventCode) {
+        case NSStreamEventOpenCompleted:
+			NSLog(@"Stream opened");
+            break;
+            
+		case NSStreamEventHasBytesAvailable:
+            NSLog(@"Event has bytes available");
+            if (aStream == inputStream)
+			{
+				uint8_t buffer[1024];
+				long len;
+				
+				while ([inputStream hasBytesAvailable])
+				{
+					len = [inputStream read:buffer maxLength:sizeof(buffer)];
+					if (len > 0)
+					{
+						NSString *output = [[NSString alloc] initWithBytes:buffer length:len encoding:NSASCIIStringEncoding];
+						
+						if (nil != output)
+						{
+							NSLog(@"TCP Client - Server sent: %@", output);
+						}
+                        
+                        
+                        
+                }
+			}
+            break;
+            
+        case NSStreamEventErrorOccurred:
+			NSLog(@"Can not connect to the host!");
+			break;
+            
+        case NSStreamEventEndEncountered:
+            NSLog(@"TCP Client - End encountered");
+            [aStream close];
+            [aStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+            //[aStream release];
+            aStream = nil;
+			break;
+            
+		default:
+			NSLog(@"Unknown event");
+	}
+
+    }
+}
+
 
 - (void)viewDidLoad
 {
@@ -81,6 +189,9 @@
     [self.locationManager startUpdatingLocation];
     
     self.colorTemp.text = @"Shake for quick ON/OFF";
+    
+    [self stream:inputStream handleEvent:NSStreamEventOpenCompleted];
+    [self streamOpenWithIp:@"128.197.53.32" withPortNumber:23];
 
 }
 -(void) getValues:(NSTimer *) timer {
@@ -101,9 +212,7 @@
     NSInteger ay = [accelY  integerValue];
     NSInteger az = [accelZ  integerValue];
 
-    //try to get this in a range
-    
-    //orientation using method
+    //another orientation method
     /*
     switch (self.interfaceOrientation) {
         case UIInterfaceOrientationLandscapeLeft:
@@ -167,21 +276,23 @@
     self.yaw.text = [NSString stringWithFormat:@"%.2f",(180/M_PI)*self.motionManager.deviceMotion.attitude.yaw];
     self.pitch.text = [NSString stringWithFormat:@"%.2f",(180/M_PI)*self.motionManager.deviceMotion.attitude.pitch];
     
-    //position?
+    /*
+     attempt at establishing position 
+     
     self.posX.text = [NSString stringWithFormat:@"%.2f",cos(self.motionManager.deviceMotion.attitude.yaw)*cos(self.motionManager.deviceMotion.attitude.pitch)];
     self.posY.text = [NSString stringWithFormat:@"%.2f",sin(self.motionManager.deviceMotion.attitude.yaw)*cos(self.motionManager.deviceMotion.attitude.pitch)];
     self.posZ.text = [NSString stringWithFormat:@"%.2f",sin(self.motionManager.deviceMotion.attitude.pitch)];
-
+     */
 
     //zenith = pi/2 - angle of elevation
     //azimuth = rotation about the Z' axis - xy
     //tilt = angle of rotation about the z axis
     
-    //could use magnetometer for heading
     self.zenith.text = [NSString stringWithFormat:@"%.2f",(180/M_PI)*((M_PI/2)-self.motionManager.deviceMotion.attitude.roll)];
     self.azimuth.text = [NSString stringWithFormat:@"%.2f", (180/M_PI)*self.motionManager.deviceMotion.attitude.yaw];
     self.tilt.text = [NSString stringWithFormat:@"%.2f",(180/M_PI)*self.motionManager.deviceMotion.attitude.roll];
 
+    //organizing the csv file
     NSString* headerRow;
     if (![[NSFileManager defaultManager] fileExistsAtPath:[self dataFilePath]]) {
         [[NSFileManager defaultManager] createFileAtPath: [self dataFilePath] contents:nil attributes:nil];
@@ -215,7 +326,7 @@
 
 
 
-//compass in degrees (with magnetic heading not true north)
+//compass in degrees (with magnetic heading parameter not true north)
 -(void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     self.compass.text = [NSString stringWithFormat:@"%.0f", newHeading.magneticHeading];
     NSString * mHeading = self.compass.text;
@@ -257,27 +368,7 @@
         self.direction.text = @"Detecting Position...";
     }
     
-   /* //color temperature control - currently does screen dim
-    if ((degrees >= 203 && degrees < 239) || (degrees >= 36 && degrees < 72)){
-        self.colorTemp.text = @"Warm: 2700K";
-        [[UIScreen mainScreen] setBrightness:0.0];
-    }
-    else if ((degrees >= 239 && degrees < 275) || (degrees >= 72 && degrees < 108)){
-        self.colorTemp.text = @"Halogen: 3000K";
-        [[UIScreen mainScreen] setBrightness:0.1];
-    }
-    else if ((degrees >= 275 && degrees < 311) || (degrees >= 108 && degrees < 144)){
-        self.colorTemp.text = @"Natural White: 4000K";
-        [[UIScreen mainScreen] setBrightness:0.4];
-    }
-    else if ((degrees >= 311 && degrees < 347) || (degrees >= 144 && degrees < 180)){
-        self.colorTemp.text = @"Day White: 5700K";
-        [[UIScreen mainScreen] setBrightness:0.7];
-    }
-    else if ((degrees >= 347 && degrees < 36)|| (degrees >= 180 && degrees < 203)){
-        self.colorTemp.text = @"Cool White: 7000K";
-        [[UIScreen mainScreen] setBrightness:1.0];
-    }*/
+   
 }
 
 - (NSString *)dataFilePath
@@ -286,87 +377,26 @@
     NSString *documentsDirectory = [paths objectAtIndex:0];
     return [documentsDirectory stringByAppendingPathComponent:@"Data1.csv"];
 }
-/*
--(BOOL)canBecomeFirstResponder {
-    return YES;
-}
 
-- (void) viewDidAppear:(BOOL)animated {
-    [self becomeFirstResponder];
-    [super viewDidAppear:animated];
-}
-
-- (void) viewDidDisappear:(BOOL)animated {
-    [self resignFirstResponder];
-    [super viewDidDisappear:animated];
-}
-
-- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
-    if (event.subtype == UIEventSubtypeMotionShake) {
-        self.shake.text = @"OFF";
-   }
-    [super motionEnded:motion withEvent:event];
-}
--(void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event{
-    if (event.subtype == UIEventSubtypeMotionShake){
-        self.shake.text = @"ON";
-    }
-}
-
-
--(BOOL)canBecomeFirstResponder {
-    return YES;
-}
-
-- (void) viewDidAppear:(BOOL)animated {
-    [self becomeFirstResponder];
-    [super viewDidAppear:animated];
-}
-
-- (void) viewDidDisappear:(BOOL)animated {
-    [self resignFirstResponder];
-    [super viewDidDisappear:animated];
-}
-
-- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
-    if (event.subtype == UIEventSubtypeMotionShake) {
-        self.shake.text = @"OFF";
-    }
-    [super motionEnded:motion withEvent:event];
-}
--(void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event{
-    if (event.subtype == UIEventSubtypeMotionShake){
-        self.shake.text = @"ON again";
-    }
-}
-
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    self.shake.text = @"This is on";
-    
-}
-//have brightness level totally up for on and 0 for off 
--(IBAction)turnOn:(id)sender{
-    if ([self.shake.text  isEqual: @"ON"]) {
-        NSURL * url = [NSURL URLWithString:@"http://ipaddress/$1"];//$1 is on
-        NSURLRequest * req = [NSURLRequest requestWithURL:url];
-        
-    }
-    else {
-        NSURL * url = [NSURL URLWithString:@"http://ipaddress/$2"];//$2 is off
-        NSURLRequest * req = [NSURLRequest requestWithURL:url];
-        
-    }
-}
-*/
 
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+//when view is about to be dismissed
+- (void)viewWillDisappear:(BOOL)animated
+{
+	[super viewWillDisappear:animated];
+    
+	[inputStream close];
+	[outputStream close];
+	inputStream = nil;
+	outputStream = nil;
+    OutputData = nil;
+
 }
 
 @end

@@ -12,12 +12,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    //[[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum]; //time elapsed before another fetch, based on phone | could use NSTimerInterval for constant updates [NSTimer scheduledTimerWithTimeInterval:0.5 target:self repeats:YES];
-    //[[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:0.5];
-    //[self redirectLogToDocumentFolder];
+    //calls log method
+    [self redirectLogToDocumentFolder];
     return YES;
 }
 
+//this redirects the console log to the app's document folder so able to acces through filesharing
 - (void) redirectLogToDocumentFolder
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
@@ -43,16 +43,17 @@
     //works for 16 mins
     UIBackgroundTaskIdentifier  taskId = 0;
     taskId = [application beginBackgroundTaskWithExpirationHandler:^{
-        //taskId = UIBackgroundTaskInvalid;
     }];
     //NSLog(@"Background time Remaining: %f",[[UIApplication sharedApplication] backgroundTimeRemaining]);
+    
     //when with this works for a while in background except needs to be connected
-    // avoid sleeping when this application is running
+    // avoids phone sleeping when this application is running
     [UIApplication sharedApplication].idleTimerDisabled = YES;
     
-        /*//works for 16 mins
-         
-        
+    
+    /*
+     works for 16 mins
+     
     __block UIBackgroundTaskIdentifier bgTask;
     bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
         // Clean up any unfinished task business by marking where you
@@ -70,11 +71,6 @@
          */
     
 }
-
-    //[self redirectLogToDocumentFolder];
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-//}
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {

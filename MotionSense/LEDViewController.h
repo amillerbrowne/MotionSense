@@ -21,10 +21,13 @@
 @property (strong, nonatomic) IBOutlet UILabel *accelY;
 @property (strong, nonatomic) IBOutlet UILabel *accelZ;
 
-@property (strong, nonatomic) IBOutlet UILabel *positionForColors;
+@property (strong, nonatomic) IBOutlet UILabel *gyroscopeX;
+@property (strong, nonatomic) IBOutlet UILabel *gyroscopeY;
+@property (strong, nonatomic) IBOutlet UILabel *gyroscopeZ;
 
-@property (weak, nonatomic) IBOutlet UIImageView *table;
-//@property (strong, nonatomic) IBOutlet UILabel *brightnessLabel;
+@property (strong, nonatomic) IBOutlet UILabel *positionForColors;
+@property (strong, nonatomic) IBOutlet UILabel *brightnessLabel;
+
 @property (weak, nonatomic) IBOutlet UILabel *compassDegrees;
 
 @property (strong, nonatomic) IBOutlet UILabel *currentColor;

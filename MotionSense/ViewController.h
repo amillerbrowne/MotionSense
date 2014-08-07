@@ -11,10 +11,13 @@
 #import <CoreLocation/CoreLocation.h>
 
 
-@interface ViewController : UIViewController <CLLocationManagerDelegate> {
+@interface ViewController : UIViewController <CLLocationManagerDelegate, NSStreamDelegate> {
     
     CMMotionManager *motionManager;
     NSOperationQueue *queue;
+    NSInputStream *inputStream;
+    NSOutputStream *outputStream;
+    NSMutableData *OutputData;
 }
 
 @property (strong, nonatomic) IBOutlet UILabel *accX;
@@ -48,6 +51,8 @@
 @property (strong, nonatomic) CLLocationManager *locationManager;
 
 @property (weak, nonatomic) IBOutlet UILabel *colorTemp;
+@property (weak, nonatomic) IBOutlet UIWebView *myWebView;
+
 
 
 @end
